@@ -38,6 +38,10 @@ mysql_proxy-partition
 mysql-partition
 proxy-partition
 
+#Redis
+cf-redis-broker-partition
+dedicated-node-partition
+
 #Diego
 brain-partition
 cell-partition
@@ -67,3 +71,6 @@ elasticsearch_persistent
 api
 ingestor
 queue
+
+#Windows
+diego-cell-windows
