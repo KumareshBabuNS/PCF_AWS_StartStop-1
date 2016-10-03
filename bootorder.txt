@@ -1,11 +1,11 @@
 #Core PCF
 NAT Instance
 ha_proxy-partition
-consul_server-partition
+consul_server
 Ops Manager
 Nat1
 nats
-etcd
+etcd_server
 nfs_server
 ccdb
 cloud_controller
@@ -13,18 +13,19 @@ uaadb-partition
 consoledb
 haproxy
 router
+tcp_router
 health_manager
 clock_global
 cloud_controller_worker
 collector
-uaa-partition
+uaa
 login
 mysql_proxy-partition
 mysql-partition
 dea
 doppler
 loggregator_trafficcontroller
-cloud_controller-partition
+cloud_controller
 
 #RabbitMQ
 rabbitmq-broker-partition
@@ -43,9 +44,9 @@ cf-redis-broker-partition
 dedicated-node-partition
 
 #Diego
-brain-partition
-cell-partition
-diego_database-partition
+diego_brain
+diego_cell
+diego_database
 
 #Ops Metrics
 maximus

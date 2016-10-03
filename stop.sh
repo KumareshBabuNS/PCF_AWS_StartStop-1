@@ -1,3 +1,3 @@
 #!/bin/bash
 
-python service.py stop vpc-4fe62a28
+python service.py stop vpc-b63703d1

@@ -87,7 +87,7 @@ def adjust_loadbalancer(elbconn, load_balancer, is_ssh):
 
 def shutdown():
  numinstance = 0
- microboshinstance = 0
+ microboshinstance = -1
  for res in reservations:
      for inst in res.instances:
             if (inst.state == "running" and inst.vpc_id == vpc_id):
