@@ -16,6 +16,7 @@ if argv_len == 4:
 
 
 routerinstances = []
+tcprouterinstances = []
 braininstances = []
 
 print option1 + ": vpc_id=" + vpc_id + " within aws_region: " + aws_region
@@ -26,7 +27,7 @@ def startinstance(instanceid):
 
 def stopinstance(instanceid):
 	try:
- 		conn.stop_instances(instance_ids=[instanceid])
+ 		conn.stop_instances(instance_ids=[instanceid], force=True)
 	except EC2ResponseError,e:
   		print e    
 	return "error" 
@@ -63,9 +64,11 @@ def example_1(n):
     sys.stdout.flush()
   print ' Done!'
   
-def adjust_loadbalancer(elbconn, load_balancer, is_ssh):
+def adjust_loadbalancer(elbconn, load_balancer, is_ssh, is_tcp):
   if is_ssh: 
     targets = braininstances
+  elif is_tcp:
+    targets = tcprouterinstances
   else:
     targets = routerinstances
   elbrouterinstances = load_balancer.instances
@@ -121,6 +124,15 @@ def shutdown():
 	     print "Stopping Instance: " + instanceid[y] + " : " + instancename[y]
 	     stopinstance(instanceid[y])
 	    break;
+
+# for x in range(0, bootinstances, 1):
+#  for y in range (0,numinstance):
+#     if instancename[y].find(bootorder[x]) <> -1:
+#      if checkinstance(instanceid[y]) == "running":
+#       print "Stopping Instance: " + instanceid[y] + " : " + instancename[y]
+#       stopinstance(instanceid[y])
+#      break;
+
  print "Shutdown Complete!"       
 
 def fix_elb():
@@ -131,7 +143,10 @@ def fix_elb():
             except KeyError:
               instName = '----VM with no Name----'
             if (inst.vpc_id == vpc_id):
-             if instName.find("router") <> -1:
+             if instName.find("tcp_router") <> -1:
+              print "Found a tcp router - marking for ELB Addition..."
+              tcprouterinstances.append(inst.id)
+             elif instName.find("router") <> -1:
               print "Found a router - marking for ELB Addition..."
               routerinstances.append(inst.id)
              if instName.find("brain") <> -1:
@@ -144,6 +159,7 @@ def fix_elb():
  load_balancers = elbconn.get_all_load_balancers()
  ssh_load_balancer = None
  load_balancer = None
+ tcp_load_balancer = None
  for elb in load_balancers:
   if elb.vpc_id == vpc_id:
    for listener in [y for y, v in enumerate(elb.listeners) if v[1] == 2222]:
@@ -152,10 +168,15 @@ def fix_elb():
    for listener in [y for y, v in enumerate(elb.listeners) if v[1] == 80]:
     load_balancer = elb
     continue
+   for listener in [y for y, v in enumerate(elb.listeners) if v[1] == 1024]:
+    tcp_load_balancer = elb
+    continue
  if load_balancer:
-  adjust_loadbalancer(elbconn, load_balancer, False)
+  adjust_loadbalancer(elbconn, load_balancer, False, False)
+ if tcp_load_balancer:
+  adjust_loadbalancer(elbconn, tcp_load_balancer, False, True)
  if ssh_load_balancer:
-  adjust_loadbalancer(elbconn, ssh_load_balancer, True)
+  adjust_loadbalancer(elbconn, ssh_load_balancer, True, False)
 
  ## This appears to be a reasonable amount of time for the services within the VM to startup.
  ## Since this VM is in a private subnet inaccessible from internet there's no way to test for specific service startup
@@ -170,6 +191,13 @@ def fix_elb():
   for inst in routerinstances:
    print "Adding instance: " + inst + " to ELB: " + load_balancer.name
    elbconn.register_instances(load_balancer.name,inst)
+ else:
+  print "Warning, no HTTP/HTTPS load balancer found!"
+
+ if tcp_load_balancer:
+  for inst in tcprouterinstances:
+   print "Adding instance: " + inst + " to ELB: " + tcp_load_balancer.name
+   elbconn.register_instances(tcp_load_balancer.name,inst)
  else:
   print "Warning, no HTTP/HTTPS load balancer found!"
 
@@ -207,7 +235,15 @@ def startup():
          print "Starting Instance: " + instanceid[y] + " : " + instancename[y]
          startinstance(instanceid[y])
         break;
-  
+
+ 
+# for x in range(0, bootinstances, 1):
+#      for y in range (0,numinstance):
+#       if instancename[y].find(bootorder[x]) <> -1:
+#        if checkinstance(instanceid[y]) == "stopped":
+#         print "Starting Instance: " + instanceid[y] + " : " + instancename[y]
+#         startinstance(instanceid[y])
+#        break;
  
  if (microboshinstance <> -1):
    print "Starting Microbosh"

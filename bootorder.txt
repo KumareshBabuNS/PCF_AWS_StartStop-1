@@ -3,6 +3,7 @@ NAT Instance
 ha_proxy-partition
 consul_server
 Ops Manager
+clock_global
 Nat1
 nats
 etcd_server
@@ -15,8 +16,6 @@ haproxy
 router
 tcp_router
 health_manager
-clock_global
-cloud_controller_worker
 collector
 uaa
 login
@@ -26,6 +25,12 @@ dea
 doppler
 loggregator_trafficcontroller
 cloud_controller
+cloud_controller_worker
+
+#Diego
+diego_database
+diego_brain
+diego_cell
 
 #RabbitMQ
 rabbitmq-broker-partition
@@ -42,11 +47,6 @@ proxy-partition
 #Redis
 cf-redis-broker-partition
 dedicated-node-partition
-
-#Diego
-diego_brain
-diego_cell
-diego_database
 
 #Ops Metrics
 maximus
