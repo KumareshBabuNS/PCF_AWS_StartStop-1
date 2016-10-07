@@ -33,20 +33,20 @@ diego_brain
 diego_cell
 
 #RabbitMQ
-rabbitmq-broker-partition
-rabbitmq-haproxy-partition
-rabbitmq-server-partition
+rabbitmq-broker
+rabbitmq-haproxy
+rabbitmq-server
 
 #MySQL
-backup-prepare-partition
-cf-mysql-broker-partition
-mysql_proxy-partition
-mysql-partition
-proxy-partition
+backup-prepare
+cf-mysql-broker
+mysql_proxy
+mysql
+proxy
 
 #Redis
-cf-redis-broker-partition
-dedicated-node-partition
+cf-redis-broker
+dedicated-node
 
 #Ops Metrics
 maximus
